@@ -74,7 +74,10 @@ export async function start({port, dir = '.'} /*: any */) {
 async function reload() {
   const app = await initialize();
   if (!(app instanceof BaseApp)) {
-    throw new Error('Application entry point did not return an App');
+    throw new Error(
+      'Application entry point did not return an App. Instead it returned: ' +
+        app.constructor.name
+    );
   }
   reverseRegister(app, ContextPlugin);
   app.register(AssetsPlugin);

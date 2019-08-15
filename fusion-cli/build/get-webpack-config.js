@@ -27,6 +27,7 @@ const LoaderContextProviderPlugin = require('./plugins/loader-context-provider-p
 const ChildCompilationPlugin = require('./plugins/child-compilation-plugin.js');
 const {
   chunkIdsLoader,
+  stringLoader,
   fileLoader,
   babelLoader,
   i18nManifestLoader,
@@ -404,6 +405,12 @@ function getWebpackConfig(opts /*: WebpackConfigOpts */) {
           loader: require.resolve('graphql-tag/loader'),
         },
         {
+          // Blacklist .flow from the config output
+          // An example where this occurs is in the wild is https://github.com/graphql/graphiql/issues/617
+          test: /\.flow$/,
+          loader: require.resolve('./loaders/ignore-loader.js'),
+        },
+        {
           sideEffects: false,
           test: sideEffectsTester,
         },
@@ -456,6 +463,7 @@ function getWebpackConfig(opts /*: WebpackConfigOpts */) {
     },
     resolveLoader: {
       alias: {
+        [stringLoader.alias]: stringLoader.path,
         [fileLoader.alias]: fileLoader.path,
         [chunkIdsLoader.alias]: chunkIdsLoader.path,
         [syncChunkIdsLoader.alias]: syncChunkIdsLoader.path,
